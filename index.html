@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clínica Dental Sonríe · Pide tu cita</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#16302b;--mute:#5d716c;--bg:#f6faf9;--card:#fff;--line:#dbe7e4;--main:#0f766e;--main2:#115e59;--soft:#e3f3f0;--bad:#b42318;--badbg:#fdecea;--wa:#1faa59}
+*{box-sizing:border-box;margin:0}
+body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55;padding-bottom:env(safe-area-inset-bottom)}
+h1,h2,h3{font-family:Fraunces,Georgia,serif;line-height:1.2}
+.wrap{max-width:720px;margin:0 auto;padding:0 18px}
+section{padding:34px 0}
+h2{font-size:1.5rem;margin-bottom:6px}
+.sub{color:var(--mute);margin-bottom:18px;font-size:.95rem}
+.hero{padding:44px 0 26px;background:var(--soft);border-bottom:1px solid var(--line)}
+.hero h1{font-size:2.1rem;margin-bottom:10px}
+.hero p{color:var(--mute);margin-bottom:18px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:12px;padding:13px 18px;font:600 .95rem Inter,sans-serif;text-decoration:none;cursor:pointer;color:#fff;background:var(--main)}
+.btn:hover{background:var(--main2)}
+.btn.wa{background:var(--wa)}.btn.line{background:#fff;color:var(--main);border:1.5px solid var(--main)}
+.btn.full{width:100%}
+.row{display:flex;flex-wrap:wrap;gap:10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px}
+.biz{display:grid;gap:6px}
+.biz b{font-family:Fraunces,serif;font-size:1.25rem}
+.biz span{color:var(--mute);font-size:.95rem}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:9px 14px;font:500 .9rem Inter,sans-serif;cursor:pointer;color:var(--ink)}
+.chip[aria-pressed=true]{background:var(--main);border-color:var(--main);color:#fff}
+.doc{display:flex;gap:12px;align-items:center;text-align:left;width:100%;border:1.5px solid var(--line);background:#fff;border-radius:14px;padding:12px;cursor:pointer;font:inherit;color:inherit;margin-bottom:8px}
+.doc[aria-pressed=true]{border-color:var(--main);background:var(--soft)}
+.av{width:42px;height:42px;border-radius:50%;background:var(--main);color:#fff;display:grid;place-items:center;font-weight:600;flex:none}
+.doc small{color:var(--mute);display:block}
+.lbl{font-weight:600;font-size:.9rem;margin:18px 0 8px;display:block}
+.days{display:grid;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));gap:8px}
+.day,.slot{border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:9px 4px;text-align:center;font:500 .88rem Inter,sans-serif;cursor:pointer;color:var(--ink)}
+.day small{display:block;color:var(--mute);font-weight:400}
+.day[aria-pressed=true],.slot[aria-pressed=true]{background:var(--main);border-color:var(--main);color:#fff}
+.day[aria-pressed=true] small{color:#d5f0ec}
+.slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(82px,1fr));gap:8px}
+.slot:disabled{background:var(--badbg);border-color:#f3c9c4;color:var(--bad);cursor:not-allowed;text-decoration:line-through}
+.slot:disabled small{display:block;text-decoration:none;font-size:.7rem}
+input,textarea{width:100%;border:1.5px solid var(--line);border-radius:12px;padding:12px;font:inherit;background:#fff;color:var(--ink)}
+input:focus,textarea:focus,button:focus-visible,a:focus-visible{outline:3px solid #7cc7bf;outline-offset:1px}
+.msg{display:none;border-radius:12px;padding:12px 14px;margin:14px 0;font-size:.92rem;font-weight:500}
+.msg.err{display:block;background:var(--badbg);color:var(--bad)}
+.msg.ok{display:block;background:var(--soft);color:var(--main2)}
+.hide{display:none}
+.rev{text-align:center}
+.stars{font-size:1.8rem;color:#e0a100;letter-spacing:4px}
+footer{padding:26px 0 40px;color:var(--mute);font-size:.85rem;text-align:center}
+.admin{font-size:.8rem;color:var(--mute);background:none;border:0;text-decoration:underline;cursor:pointer;margin-top:8px}
+@media (prefers-reduced-motion:no-preference){.fade{animation:f .25s ease-out}@keyframes f{from{opacity:0}to{opacity:1}}}
+</style>
+</head>
+<body>
+
+<!-- ============ ENCABEZADO ============ -->
+<header class="hero"><div class="wrap">
+  <h1 id="t-name"></h1>
+  <p id="t-tag"></p>
+  <div class="row">
+    <a class="btn" href="#cita">Pedir cita</a>
+    <a class="btn wa" id="b-wa-top" target="_blank" rel="noopener">WhatsApp</a>
+  </div>
+</div></header>
+
+<main class="wrap">
+
+<!-- ============ TARJETA DE PRESENTACIÓN ============ -->
+<section>
+  <div class="card biz">
+    <b id="c-name"></b>
+    <span id="c-addr"></span>
+    <span id="c-phone"></span>
+    <span id="c-hours"></span>
+    <div class="row" style="margin-top:10px">
+      <a class="btn" id="b-call">Llamar</a>
+      <a class="btn line" id="b-map" target="_blank" rel="noopener">Cómo llegar</a>
+      <button class="btn line" id="b-vcf" type="button">Guardar contacto</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ RESERVA ============ -->
+<section id="cita">
+  <h2>Reserva tu cita</h2>
+  <p class="sub">Elige servicio, doctor, día y hora. Los turnos ocupados aparecen bloqueados.</p>
+
+  <div id="form-area">
+    <span class="lbl">1. ¿Qué necesitas?</span>
+    <div class="chips" id="services"></div>
+
+    <span class="lbl">2. Doctor</span>
+    <div id="doctors"></div>
+
+    <span class="lbl">3. Día</span>
+    <div class="days" id="days"></div>
+
+    <span class="lbl">4. Hora</span>
+    <div class="slots" id="slots"></div>
+
+    <span class="lbl">5. Tus datos</span>
+    <div style="display:grid;gap:10px">
+      <input id="f-name" placeholder="Nombre completo" autocomplete="name">
+      <input id="f-phone" type="tel" placeholder="Tu teléfono / WhatsApp (con prefijo, ej. 34600123456)" autocomplete="tel">
+      <textarea id="f-note" rows="2" placeholder="Notas (opcional)"></textarea>
+    </div>
+    <div class="msg" id="msg" role="alert"></div>
+    <button class="btn full" id="b-book" type="button" style="margin-top:10px">Confirmar cita</button>
+  </div>
+
+  <div id="done" class="hide card fade">
+    <h3 style="margin-bottom:6px">¡Cita registrada!</h3>
+    <p id="done-text" class="sub"></p>
+    <div style="display:grid;gap:10px">
+      <a class="btn wa" id="b-send-clinic" target="_blank" rel="noopener">Enviar a la clínica por WhatsApp</a>
+      <a class="btn line" id="b-remind" target="_blank" rel="noopener">Recordarme por WhatsApp</a>
+      <button class="btn line" id="b-new" type="button">Pedir otra cita</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ RESEÑA GOOGLE ============ -->
+<section>
+  <div class="card rev">
+    <div class="stars" aria-hidden="true">★★★★★</div>
+    <h2 style="margin-top:6px">¿Te atendimos bien?</h2>
+    <p class="sub">Tu opinión en Google ayuda a otras personas a elegirnos.</p>
+    <a class="btn" id="b-review" target="_blank" rel="noopener">Dejar reseña en Google</a>
+  </div>
+</section>
+
+</main>
+
+<footer><div class="wrap">
+  <div id="foot"></div>
+  <button class="admin" id="b-admin" type="button">Ver citas (solo clínica)</button>
+  <div id="admin-box" class="hide" style="text-align:left;margin-top:12px"></div>
+</div></footer>
+
+<script>
+/* =====================================================================
+   CONFIGURACIÓN — CAMBIA SOLO ESTA PARTE
+   ===================================================================== */
+const CONFIG = {
+  clinicName: "Clínica Dental Sonríe",
+  tagline: "Cuidamos tu sonrisa con calma y sin dolor.",
+  address: "Calle Principal 123, Tu Ciudad",
+  phone: "+34600123456",            // con prefijo del país
+  whatsapp: "34600123456",          // solo números, sin + ni espacios
+  hours: "Lun–Vie 9:30–13:30 y 16:00–20:00 · Sáb 9:30–13:30",
+  googleReviewUrl: "https://search.google.com/local/writereview?placeid=TU_PLACE_ID",
+  mapsUrl: "",                      // opcional; si está vacío se arma con la dirección
+  adminPin: "1234",                 // PIN para ver la lista de citas
+  /* Para que los turnos ocupados se compartan entre TODOS los pacientes,
+     pega aquí la URL de tu Firebase Realtime Database (ver instrucciones).
+     Ejemplo: "https://sonrie-default-rtdb.firebaseio.com"
+     Si lo dejas vacío, las citas se guardan solo en este dispositivo. */
+  firebaseUrl: "",
+  doctors: [
+    { id: "d1", name: "Dra. Ana Torres",   role: "Odontología general y estética" },
+    { id: "d2", name: "Dr. Luis Ramírez",  role: "Implantes y cirugía oral" },
+    { id: "d3", name: "Dra. Carla Núñez",  role: "Encías, endodoncia y ortodoncia" }
+  ],
+  services: [
+    "Revisión general", "Limpieza dental", "Sangrado de encías", "Dolor de muelas / urgencia",
+    "Extracción de piezas", "Implante dental", "Blanqueamiento", "Ortodoncia",
+    "Empastes y caries", "Endodoncia", "Carillas / estética", "Prótesis y coronas",
+    "Odontopediatría (niños)"
+  ],
+  // Horas por día (0=Dom … 6=Sáb). Lista vacía = cerrado.
+  schedule: {
+    0: [],
+    1: ["09:30","10:15","11:00","11:45","12:30","13:15","16:00","16:45","17:30","18:15","19:00"],
+    2: ["09:30","10:15","11:00","11:45","12:30","13:15","16:00","16:45","17:30","18:15","19:00"],
+    3: ["09:30","10:15","11:00","11:45","12:30","13:15","16:00","16:45","17:30","18:15","19:00"],
+    4: ["09:30","10:15","11:00","11:45","12:30","13:15","16:00","16:45","17:30","18:15","19:00"],
+    5: ["09:30","10:15","11:00","11:45","12:30","13:15","16:00","16:45","17:30","18:15","19:00"],
+    6: ["09:30","10:15","11:00","11:45","12:30","13:15"]
+  },
+  daysAhead: 14
+};
+
+/* =====================================================================
+   CÓDIGO (no hace falta tocarlo)
+   ===================================================================== */
+const $ = id => document.getElementById(id);
+const DN = ["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"];
+const MN = ["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
+const st = { service: null, doctor: CONFIG.doctors[0].id, date: null, time: null, booked: {} };
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const pad = n => String(n).padStart(2, "0");
+const ymd = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const keyOf = (date, time, doc) => `${date}_${time.replace(":","")}_${doc}`;
+
+/* ---------- Almacenamiento ---------- */
+const LS = "sonrie_citas_v1";
+const useCloud = () => !!CONFIG.firebaseUrl;
+const base = () => CONFIG.firebaseUrl.replace(/\/$/, "");
+function localAll(){ try { return JSON.parse(localStorage.getItem(LS)) || {}; } catch(e){ return {}; } }
+async function loadAll(){
+  if (useCloud()) {
+    try { const r = await fetch(base() + "/citas.json"); return (await r.json()) || {}; }
+    catch(e){ showMsg("No se pudo leer la disponibilidad. Revisa tu conexión.", "err"); return localAll(); }
+  }
+  return localAll();
+}
+async function saveOne(key, rec){
+  if (useCloud()) {
+    const r = await fetch(`${base()}/citas/${key}.json`, { method: "PUT", body: JSON.stringify(rec) });
+    if (!r.ok) throw new Error("save");
+  } else {
+    const all = localAll(); all[key] = rec;
+    localStorage.setItem(LS, JSON.stringify(all));
+  }
+}
+async function existsKey(key){
+  if (useCloud()) { const r = await fetch(`${base()}/citas/${key}.json`); return (await r.json()) !== null; }
+  return !!localAll()[key];
+}
+
+/* ---------- Pintado ---------- */
+function showMsg(t, type){ const m = $("msg"); m.textContent = t; m.className = "msg " + (t ? type : ""); }
+function init(){
+  const c = CONFIG;
+  document.title = c.clinicName + " · Pide tu cita";
+  $("t-name").textContent = c.clinicName; $("t-tag").textContent = c.tagline;
+  $("c-name").textContent = c.clinicName; $("c-addr").textContent = "📍 " + c.address;
+  $("c-phone").textContent = "📞 " + c.phone; $("c-hours").textContent = "🕒 " + c.hours;
+  $("b-call").href = "tel:" + c.phone;
+  $("b-map").href = c.mapsUrl || "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(c.address);
+  $("b-wa-top").href = "https://wa.me/" + c.whatsapp + "?text=" + encodeURIComponent("Hola, quisiera información en " + c.clinicName);
+  $("b-review").href = c.googleReviewUrl;
+  $("foot").textContent = c.clinicName + " · " + c.address;
+  st.service = c.services[0];
+  renderServices(); renderDoctors(); renderDays(); refresh();
+}
+function renderServices(){
+  $("services").innerHTML = CONFIG.services.map(s =>
+    `<button class="chip" type="button" aria-pressed="${s===st.service}" data-s="${esc(s)}">${esc(s)}</button>`).join("");
+  $("services").onclick = e => { const b = e.target.closest("[data-s]"); if(!b) return; st.service = b.dataset.s; renderServices(); };
+}
+function renderDoctors(){
+  $("doctors").innerHTML = CONFIG.doctors.map(d => {
+    const ini = d.name.replace(/^(Dra?\.)\s*/,"").split(" ").map(w=>w[0]).slice(0,2).join("");
+    return `<button class="doc" type="button" aria-pressed="${d.id===st.doctor}" data-d="${d.id}">
+      <span class="av">${esc(ini)}</span><span><b>${esc(d.name)}</b><small>${esc(d.role)}</small></span></button>`;
+  }).join("");
+  $("doctors").onclick = e => { const b = e.target.closest("[data-d]"); if(!b) return; st.doctor = b.dataset.d; st.time = null; renderDoctors(); refresh(); };
+}
+function openDays(){
+  const out = []; const d = new Date(); d.setHours(12,0,0,0);
+  for (let i = 0; out.length < CONFIG.daysAhead && i < 60; i++) {
+    const x = new Date(d); x.setDate(d.getDate() + i);
+    const hrs = CONFIG.schedule[x.getDay()] || [];
+    if (hrs.length) out.push(x);
+  }
+  return out;
+}
+function renderDays(){
+  const days = openDays();
+  if (!st.date) st.date = ymd(days[0]);
+  $("days").innerHTML = days.map(x => {
+    const k = ymd(x);
+    return `<button class="day" type="button" aria-pressed="${k===st.date}" data-k="${k}">${DN[x.getDay()]}<small>${x.getDate()} ${MN[x.getMonth()]}</small></button>`;
+  }).join("");
+  $("days").onclick = e => { const b = e.target.closest("[data-k]"); if(!b) return; st.date = b.dataset.k; st.time = null; renderDays(); refresh(); };
+}
+async function refresh(){
+  st.booked = await loadAll();
+  renderSlots();
+}
+function renderSlots(){
+  const [y,m,d] = st.date.split("-").map(Number);
+  const hrs = CONFIG.schedule[new Date(y,m-1,d).getDay()] || [];
+  const now = new Date();
+  $("slots").innerHTML = hrs.map(h => {
+    const taken = !!st.booked[keyOf(st.date, h, st.doctor)];
+    const [hh,mm] = h.split(":").map(Number);
+    const past = new Date(y,m-1,d,hh,mm) <= now;
+    const off = taken || past;
+    return `<button class="slot" type="button" data-h="${h}" ${off?"disabled":""} aria-pressed="${h===st.time}">${h}${taken?"<small>Ocupado</small>":(past?"<small>Pasó</small>":"")}</button>`;
+  }).join("");
+  $("slots").onclick = e => { const b = e.target.closest("[data-h]"); if(!b||b.disabled) return; st.time = b.dataset.h; showMsg("",""); renderSlots(); };
+}
+
+/* ---------- Reservar ---------- */
+const fmtDate = iso => { const [y,m,d] = iso.split("-").map(Number); const x = new Date(y,m-1,d); return `${DN[x.getDay()]} ${d} de ${MN[m-1]}`; };
+const docName = id => CONFIG.doctors.find(d => d.id === id).name;
+
+$("b-book").onclick = async () => {
+  const name = $("f-name").value.trim(), phone = $("f-phone").value.replace(/\D/g,""), note = $("f-note").value.trim();
+  if (!st.time) return showMsg("Elige una hora disponible.", "err");
+  if (name.length < 3) return showMsg("Escribe tu nombre completo.", "err");
+  if (phone.length < 8) return showMsg("Escribe un teléfono válido, con prefijo del país.", "err");
+  const btn = $("b-book"); btn.disabled = true; btn.textContent = "Comprobando…";
+  try {
+    const key = keyOf(st.date, st.time, st.doctor);
+    // Doble comprobación justo antes de guardar: evita citas repetidas
+    if (await existsKey(key)) {
+      showMsg("Este turno ya está ocupado. Elige otra hora u otro doctor.", "err");
+      await refresh(); st.time = null; renderSlots(); return;
+    }
+    const all = await loadAll();
+    const dup = Object.values(all).find(r => r.phone === phone && r.date === st.date && r.time === st.time);
+    if (dup) { showMsg("Ya tienes una cita en ese día y hora.", "err"); return; }
+    const rec = { name, phone, note, service: st.service, doctor: st.doctor, date: st.date, time: st.time, created: Date.now() };
+    await saveOne(key, rec);
+    showDone(rec);
+  } catch(e){
+    showMsg("No se pudo guardar la cita. Inténtalo de nuevo.", "err");
+  } finally { btn.disabled = false; btn.textContent = "Confirmar cita"; }
+};
+function showDone(r){
+  const when = `${fmtDate(r.date)} a las ${r.time}`;
+  $("form-area").classList.add("hide"); $("done").classList.remove("hide");
+  $("done-text").textContent = `${r.service} con ${docName(r.doctor)} · ${when}.`;
+  const toClinic = `Hola ${CONFIG.clinicName}, soy ${r.name}. Pedí cita de "${r.service}" con ${docName(r.doctor)} el ${when}. Mi teléfono: ${r.phone}.${r.note ? " Nota: " + r.note : ""}`;
+  $("b-send-clinic").href = "https://wa.me/" + CONFIG.whatsapp + "?text=" + encodeURIComponent(toClinic);
+  const remind = `Recordatorio: tienes cita en ${CONFIG.clinicName} el ${when} con ${docName(r.doctor)} (${r.service}). Dirección: ${CONFIG.address}. Si no puedes venir, avísanos al ${CONFIG.phone}.`;
+  $("b-remind").href = "https://wa.me/" + r.phone + "?text=" + encodeURIComponent(remind);
+}
+$("b-new").onclick = () => {
+  $("done").classList.add("hide"); $("form-area").classList.remove("hide");
+  $("f-note").value = ""; st.time = null; refresh();
+};
+
+/* ---------- Guardar contacto (vCard) ---------- */
+$("b-vcf").onclick = () => {
+  const v = `BEGIN:VCARD\nVERSION:3.0\nFN:${CONFIG.clinicName}\nORG:${CONFIG.clinicName}\nTEL;TYPE=WORK:${CONFIG.phone}\nADR;TYPE=WORK:;;${CONFIG.address};;;;\nEND:VCARD`;
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([v], { type: "text/vcard" }));
+  a.download = "clinica-sonrie.vcf"; a.click();
+};
+
+/* ---------- Lista de citas para la clínica (con PIN) ---------- */
+$("b-admin").onclick = async () => {
+  const box = $("admin-box");
+  if (!box.classList.contains("hide")) { box.classList.add("hide"); return; }
+  if (prompt("PIN de la clínica:") !== CONFIG.adminPin) return alert("PIN incorrecto.");
+  const rows = Object.values(await loadAll()).sort((a,b) => (a.date+a.time).localeCompare(b.date+b.time));
+  box.innerHTML = rows.length ? rows.map(r =>
+    `<div class="card" style="margin-bottom:8px;padding:12px"><b>${esc(fmtDate(r.date))} ${esc(r.time)}</b> · ${esc(docName(r.doctor))}<br>${esc(r.name)} · ${esc(r.phone)}<br><span style="color:var(--mute)">${esc(r.service)}${r.note ? " — " + esc(r.note) : ""}</span></div>`
+  ).join("") : "<p>No hay citas todavía.</p>";
+  box.classList.remove("hide");
+};
+
+init();
+</script>
+</body>
+</html>
