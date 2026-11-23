@@ -320,7 +320,7 @@ function showDone(r){
   $("done-text").textContent = `${r.service} con ${docName(r.doctor)} · ${when}.`;
   const toClinic = `Hola ${CONFIG.clinicName}, soy ${r.name}. Pedí cita de "${r.service}" con ${docName(r.doctor)} el ${when}. Mi teléfono: ${r.phone}.${r.note ? " Nota: " + r.note : ""}`;
   $("b-send-clinic").href = "https://wa.me/" + CONFIG.whatsapp + "?text=" + encodeURIComponent(toClinic);
-  const remind = `Recordatorio: tienes cita en ${CONFIG.clinicName} el ${when} con ${docName(r.doctor)} (${r.service}). Dirección: ${CONFIG.address}. Si no puedes venir, avísanos al ${CONFIG.phone}.`;
+  const remind = `Recordatorio: tienes cita en ${CONFIG.clinicName} el ${when} con ${docName(r.doctor)} (${r.service}). Dirección: ${CONFIG.address}. Si no puedes venir a la cita, por favor avísanos al ${CONFIG.phone} y pide otra cita para otro día o fecha aquí: ${location.href.split("#")[0]}`;
   $("b-remind").href = "https://wa.me/" + r.phone + "?text=" + encodeURIComponent(remind);
 }
 $("b-new").onclick = () => {
