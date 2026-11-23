@@ -160,6 +160,7 @@ const CONFIG = {
      Ejemplo: "https://sonrie-default-rtdb.firebaseio.com"
      Si lo dejas vacío, las citas se guardan solo en este dispositivo. */
   firebaseUrl: "https://clinica-dental-am-default-rtdb.europe-west1.firebasedatabase.app",
+  adminUrl: "https://console.firebase.google.com/project/clinica-dental-am/database/clinica-dental-am-default-rtdb/data", // la clínica ve las citas aquí con su cuenta de Google
   doctors: [
     { id: "d1", name: "Dra. Ana Torres",   role: "Odontología general y estética" },
     { id: "d2", name: "Dr. Luis Ramírez",  role: "Implantes y cirugía oral" },
@@ -203,23 +204,26 @@ const base = () => CONFIG.firebaseUrl.replace(/\/$/, "");
 function localAll(){ try { return JSON.parse(localStorage.getItem(LS)) || {}; } catch(e){ return {}; } }
 async function loadAll(){
   if (useCloud()) {
-    try { const r = await fetch(base() + "/citas.json"); return (await r.json()) || {}; }
-    catch(e){ showMsg("No se pudo leer la disponibilidad. Revisa tu conexión.", "err"); return localAll(); }
+    try { const r = await fetch(base() + "/ocupados.json"); return (await r.json()) || {}; }
+    catch(e){ showMsg("No se pudo leer la disponibilidad. Revisa tu conexión.", "err"); return {}; }
   }
   return localAll();
 }
-async function saveOne(key, rec){
+/* Reserva en 2 pasos: 1) marca el turno (público, solo "true"); 2) guarda los datos del paciente (privado).
+   Si el turno ya existe, Firebase lo rechaza: no hay citas repetidas ni aunque dos personas pulsen a la vez. */
+async function reserve(key, rec){
   if (useCloud()) {
-    const r = await fetch(`${base()}/citas/${key}.json`, { method: "PUT", body: JSON.stringify(rec) });
-    if (!r.ok) throw new Error("save");
-  } else {
-    const all = localAll(); all[key] = rec;
-    localStorage.setItem(LS, JSON.stringify(all));
+    const r = await fetch(`${base()}/ocupados/${key}.json`, { method: "PUT", body: "true" });
+    if (r.status === 401 || r.status === 403) return "taken";
+    if (!r.ok) throw new Error("claim");
+    const r2 = await fetch(`${base()}/citas/${key}.json`, { method: "PUT", body: JSON.stringify(rec) });
+    if (!r2.ok) throw new Error("save");
+    return "ok";
   }
-}
-async function existsKey(key){
-  if (useCloud()) { const r = await fetch(`${base()}/citas/${key}.json`); return (await r.json()) !== null; }
-  return !!localAll()[key];
+  const all = localAll();
+  if (all[key]) return "taken";
+  all[key] = rec; localStorage.setItem(LS, JSON.stringify(all));
+  return "ok";
 }
 
 /* ---------- Pintado ---------- */
@@ -299,16 +303,12 @@ $("b-book").onclick = async () => {
   const btn = $("b-book"); btn.disabled = true; btn.textContent = "Comprobando…";
   try {
     const key = keyOf(st.date, st.time, st.doctor);
-    // Doble comprobación justo antes de guardar: evita citas repetidas
-    if (await existsKey(key)) {
-      showMsg("Este turno ya está ocupado. Elige otra hora u otro doctor.", "err");
-      await refresh(); st.time = null; renderSlots(); return;
-    }
-    const all = await loadAll();
-    const dup = Object.values(all).find(r => r.phone === phone && r.date === st.date && r.time === st.time);
-    if (dup) { showMsg("Ya tienes una cita en ese día y hora.", "err"); return; }
     const rec = { name, phone, note, service: st.service, doctor: st.doctor, date: st.date, time: st.time, created: Date.now() };
-    await saveOne(key, rec);
+    const res = await reserve(key, rec);
+    if (res === "taken") {
+      showMsg("Este turno ya está ocupado. Elige otra hora u otro doctor.", "err");
+      st.time = null; await refresh(); return;
+    }
     showDone(rec);
   } catch(e){
     showMsg("No se pudo guardar la cita. Inténtalo de nuevo.", "err");
@@ -339,6 +339,7 @@ $("b-vcf").onclick = () => {
 /* ---------- Lista de citas para la clínica (con PIN) ---------- */
 $("b-admin").onclick = async () => {
   const box = $("admin-box");
+  if (useCloud()) { window.open(CONFIG.adminUrl, "_blank", "noopener"); return; }
   if (!box.classList.contains("hide")) { box.classList.add("hide"); return; }
   if (prompt("PIN de la clínica:") !== CONFIG.adminPin) return alert("PIN incorrecto.");
   const rows = Object.values(await loadAll()).sort((a,b) => (a.date+a.time).localeCompare(b.date+b.time));
